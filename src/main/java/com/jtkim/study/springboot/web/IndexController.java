@@ -1,14 +1,15 @@
 package com.jtkim.study.springboot.web;
 
+import com.jtkim.study.springboot.config.auth.dto.SessionUser;
 import com.jtkim.study.springboot.service.posts.PostsService;
 import com.jtkim.study.springboot.web.dto.PostsResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+
+import javax.servlet.http.HttpSession;
 
 
 @Controller
@@ -16,11 +17,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class IndexController {
 
     private final PostsService postsService;
-    public static final Logger log =  LoggerFactory.getLogger(IndexController.class);
+    private final HttpSession httpSession;
+//    public static final Logger log =  LoggerFactory.getLogger(IndexController.class);
     
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("posts", postsService.findAllByDesc());
+
+        SessionUser user = (SessionUser) httpSession.getAttribute("user");
+
+        if(user != null){
+            model.addAttribute("userName", user.getName());
+        }
         return "index";
     }
 
